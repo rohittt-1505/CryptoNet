@@ -1,0 +1,660 @@
+{% extends "base.html" %}
+
+{% block title %}CryptoNet | Secure Communication{% endblock %}
+
+{% block content %}
+<style>
+    .home-page {
+        overflow: hidden;
+    }
+
+    .hero {
+        position: relative;
+        padding: 76px 0 58px;
+    }
+
+    .hero::before {
+        content: "";
+        position: absolute;
+        width: 430px;
+        height: 430px;
+        right: -100px;
+        top: -70px;
+        border-radius: 50%;
+        background: rgba(124, 58, 237, .16);
+        filter: blur(100px);
+        pointer-events: none;
+    }
+
+    .hero::after {
+        content: "";
+        position: absolute;
+        width: 260px;
+        height: 260px;
+        left: -150px;
+        bottom: 0;
+        border-radius: 50%;
+        background: rgba(251, 146, 60, .07);
+        filter: blur(90px);
+        pointer-events: none;
+    }
+
+    .hero-grid {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: 1.08fr .92fr;
+        align-items: center;
+        gap: 55px;
+    }
+
+    .home-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        padding: 8px 12px;
+        margin-bottom: 23px;
+        border: 1px solid rgba(167, 139, 250, .3);
+        border-radius: 30px;
+        background: rgba(124, 58, 237, .1);
+        color: #c4b5fd;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 1.1px;
+    }
+
+    .home-eyebrow span {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #fb923c;
+        box-shadow: 0 0 12px rgba(251, 146, 60, .6);
+    }
+
+    .hero-title {
+        max-width: 650px;
+        margin: 0 0 23px;
+        font-size: clamp(42px, 5.2vw, 67px);
+        font-weight: 800;
+        letter-spacing: -3px;
+        line-height: 1.08;
+    }
+
+    .hero-title .title-purple {
+        color: #b69aff;
+    }
+
+    .hero-title .title-orange {
+        color: #fb923c;
+    }
+
+    .hero-description {
+        max-width: 520px;
+        color: #a3a8c2;
+        font-size: 15px;
+        line-height: 1.9;
+    }
+
+    .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 29px;
+    }
+
+    .hero-actions .btn {
+        min-height: 47px;
+        padding: 12px 21px;
+    }
+
+    .hero-note {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin-top: 23px;
+        color: #858ba8;
+        font-size: 11px;
+    }
+
+    .hero-note span {
+        color: #a78bfa;
+    }
+
+    /* Hero security visual */
+
+    .visual-wrap {
+        position: relative;
+        padding: 20px 0;
+    }
+
+    .visual-grid {
+        position: absolute;
+        inset: 0;
+        opacity: .3;
+        background-image:
+            linear-gradient(rgba(139, 92, 246, .12) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(139, 92, 246, .12) 1px, transparent 1px);
+        background-size: 35px 35px;
+        mask-image: radial-gradient(ellipse, black 20%, transparent 76%);
+        pointer-events: none;
+    }
+
+    .security-visual {
+        position: relative;
+        z-index: 1;
+        max-width: 460px;
+        margin: 0 auto;
+        padding: 28px;
+        overflow: hidden;
+        border: 1px solid rgba(139, 92, 246, .35);
+        border-radius: 22px;
+        background: linear-gradient(145deg, rgba(24, 25, 53, .92), rgba(10, 12, 27, .97));
+        box-shadow: 0 25px 75px rgba(0, 0, 0, .3), inset 0 1px rgba(255, 255, 255, .035);
+    }
+
+    .visual-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding-bottom: 19px;
+        border-bottom: 1px solid #272944;
+    }
+
+    .visual-top-label {
+        color: #b5b8d0;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .live-pill {
+        padding: 6px 9px;
+        border: 1px solid rgba(74, 222, 128, .2);
+        border-radius: 20px;
+        background: rgba(74, 222, 128, .07);
+        color: #86efac;
+        font-size: 10px;
+        white-space: nowrap;
+    }
+
+    .shield-stage {
+        position: relative;
+        display: grid;
+        min-height: 225px;
+        place-items: center;
+    }
+
+    .shield-orbit {
+        position: absolute;
+        width: 190px;
+        height: 190px;
+        border: 1px solid rgba(139, 92, 246, .2);
+        border-radius: 50%;
+        box-shadow: 0 0 35px rgba(124, 58, 237, .08);
+    }
+
+    .shield-orbit.orbit-two {
+        width: 145px;
+        height: 145px;
+        border-color: rgba(251, 146, 60, .23);
+        border-style: dashed;
+    }
+
+    .shield-core {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 108px;
+        height: 122px;
+        color: #d9caff;
+        font-size: 59px;
+        filter: drop-shadow(0 0 20px rgba(167, 139, 250, .48));
+    }
+
+    .floating-icon {
+        position: absolute;
+        display: grid;
+        place-items: center;
+        width: 43px;
+        height: 43px;
+        border: 1px solid #3d3267;
+        border-radius: 12px;
+        background: rgba(22, 20, 49, .95);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, .25);
+        font-size: 19px;
+    }
+
+    .floating-icon.icon-one {
+        top: 28px;
+        left: 12%;
+        color: #c4b5fd;
+    }
+
+    .floating-icon.icon-two {
+        top: 45px;
+        right: 10%;
+        color: #fb923c;
+    }
+
+    .floating-icon.icon-three {
+        bottom: 25px;
+        left: 18%;
+        color: #fb923c;
+    }
+
+    .floating-icon.icon-four {
+        right: 15%;
+        bottom: 20px;
+        color: #c4b5fd;
+    }
+
+    .visual-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 9px;
+        margin-top: 5px;
+    }
+
+    .visual-stat {
+        padding: 13px 8px;
+        border: 1px solid #272944;
+        border-radius: 11px;
+        background: rgba(255, 255, 255, .018);
+        text-align: center;
+    }
+
+    .visual-stat strong {
+        display: block;
+        color: #c4b5fd;
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .visual-stat span {
+        display: block;
+        margin-top: 5px;
+        color: #8f95b0;
+        font-size: 9px;
+        line-height: 1.5;
+    }
+
+    /* Feature section */
+
+    .features-section {
+        padding: 48px 0 65px;
+    }
+
+    .section-heading {
+        max-width: 640px;
+        margin: 0 auto 34px;
+        text-align: center;
+    }
+
+    .section-heading h2 {
+        margin-bottom: 13px;
+        font-size: clamp(27px, 4vw, 36px);
+        font-weight: 800;
+        letter-spacing: -1.2px;
+    }
+
+    .section-heading p {
+        color: #a3a8c2;
+        font-size: 14px;
+        line-height: 1.8;
+    }
+
+    .feature-card {
+        position: relative;
+        height: 100%;
+        padding: 25px;
+        overflow: hidden;
+        border: 1px solid #252b49;
+        border-radius: 16px;
+        background: linear-gradient(145deg, rgba(19, 22, 44, .92), rgba(11, 13, 28, .96));
+        transition: transform .25s, border-color .25s, box-shadow .25s;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(167, 139, 250, .55);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, .2);
+    }
+
+    .feature-icon {
+        display: grid;
+        place-items: center;
+        width: 49px;
+        height: 49px;
+        margin-bottom: 21px;
+        border: 1px solid rgba(167, 139, 250, .2);
+        border-radius: 13px;
+        background: rgba(124, 58, 237, .13);
+        font-size: 22px;
+    }
+
+    .feature-icon.orange {
+        border-color: rgba(251, 146, 60, .2);
+        background: rgba(251, 146, 60, .09);
+    }
+
+    .feature-card h3 {
+        margin-bottom: 11px;
+        font-size: 16px;
+        font-weight: 750;
+    }
+
+    .feature-card p {
+        margin: 0;
+        color: #9da3bd;
+        font-size: 12px;
+        line-height: 1.9;
+    }
+
+    .feature-number {
+        position: absolute;
+        top: 21px;
+        right: 22px;
+        color: #484362;
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    /* Bottom CTA */
+
+    .cta-section {
+        padding: 0 0 65px;
+    }
+
+    .cta-card {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        padding: 34px;
+        overflow: hidden;
+        border: 1px solid rgba(139, 92, 246, .3);
+        border-radius: 18px;
+        background:
+            radial-gradient(ellipse at 100% 0%, rgba(124, 58, 237, .2), transparent 48%),
+            linear-gradient(120deg, #12142b, #0d1021);
+    }
+
+    .cta-card::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 180px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #8b5cf6, #fb923c);
+    }
+
+    .cta-card h2 {
+        margin-bottom: 10px;
+        font-size: clamp(22px, 3vw, 28px);
+        font-weight: 800;
+        letter-spacing: -.7px;
+    }
+
+    .cta-card p {
+        margin: 0;
+        color: #a3a8c2;
+        font-size: 13px;
+        line-height: 1.8;
+    }
+
+    .cta-card .btn {
+        position: relative;
+        z-index: 1;
+        flex-shrink: 0;
+        padding: 13px 19px;
+    }
+
+    @media (max-width: 767px) {
+        .hero {
+            padding: 44px 0 30px;
+        }
+
+        .hero-grid {
+            grid-template-columns: 1fr;
+            gap: 34px;
+        }
+
+        .hero-title {
+            font-size: clamp(40px, 10vw, 55px);
+            letter-spacing: -2px;
+        }
+
+        .hero-description {
+            font-size: 14px;
+        }
+
+        .security-visual {
+            padding: 20px;
+        }
+
+        .shield-stage {
+            min-height: 205px;
+        }
+
+        .features-section {
+            padding: 35px 0 45px;
+        }
+
+        .cta-card {
+            align-items: flex-start;
+            flex-direction: column;
+            padding: 25px;
+        }
+    }
+
+    @media (max-width: 400px) {
+        .visual-stats {
+            gap: 5px;
+        }
+
+        .visual-stat {
+            padding: 11px 4px;
+        }
+
+        .visual-stat strong {
+            font-size: 12px;
+        }
+
+        .visual-stat span {
+            font-size: 8px;
+        }
+    }
+</style>
+
+<div class="home-page">
+    <div class="container">
+        <section class="hero">
+            <div class="hero-grid">
+                <div>
+                    <div class="home-eyebrow">
+                        <span></span>
+                        SECURE COMMUNICATION PLATFORM
+                    </div>
+
+                    <h1 class="hero-title">
+                        Send messages<br>
+                        with <span class="title-orange">complete</span><br>
+                        <span class="title-purple">privacy.</span>
+                    </h1>
+
+                    <p class="hero-description">
+                        CryptoNet demonstrates secure data transmission through
+                        AES-256-GCM authenticated encryption, protected message
+                        storage and TCP client-server communication.
+                    </p>
+
+                    <div class="hero-actions">
+                        {% if session.get('user_id') %}
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+                            Open Dashboard <span>→</span>
+                        </a>
+
+                        <a href="{{ url_for('messages') }}" class="btn btn-outline-light">
+                            Compose Message
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('register') }}" class="btn btn-primary">
+                            Get Started <span>→</span>
+                        </a>
+
+                        <a href="#features" class="btn btn-outline-light">
+                            Explore Features
+                        </a>
+                        {% endif %}
+                    </div>
+
+                    <div class="hero-note">
+                        <span>✦</span>
+                        Designed for secure messaging and network learning
+                    </div>
+                </div>
+
+                <div class="visual-wrap">
+                    <div class="visual-grid"></div>
+
+                    <div class="security-visual">
+                        <div class="visual-top">
+                            <span class="visual-top-label">CRYPTONET SECURITY</span>
+                            <span class="live-pill">● LOCAL DEMO</span>
+                        </div>
+
+                        <div class="shield-stage">
+                            <div class="shield-orbit"></div>
+                            <div class="shield-orbit orbit-two"></div>
+
+                            <div class="floating-icon icon-one">✉</div>
+                            <div class="floating-icon icon-two">♙</div>
+                            <div class="floating-icon icon-three">⌑</div>
+                            <div class="floating-icon icon-four">⌘</div>
+
+                            <div class="shield-core">⬡</div>
+                        </div>
+
+                        <div class="visual-stats">
+                            <div class="visual-stat">
+                                <strong>AES-256</strong>
+                                <span>Encryption</span>
+                            </div>
+
+                            <div class="visual-stat">
+                                <strong>TCP</strong>
+                                <span>Networking</span>
+                            </div>
+
+                            <div class="visual-stat">
+                                <strong>SQL</strong>
+                                <span>Storage</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features-section" id="features">
+            <div class="section-heading">
+                <div class="home-eyebrow">
+                    <span></span>
+                    CORE CAPABILITIES
+                </div>
+
+                <h2>Security meets <span class="gradient-text">simplicity.</span></h2>
+
+                <p>
+                    Explore the key technologies behind CryptoNet, from
+                    encrypted messages to network communication.
+                </p>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <span class="feature-number">01</span>
+                        <div class="feature-icon">🔐</div>
+                        <h3>Message Encryption</h3>
+                        <p>
+                            AES-GCM protects message contents and detects
+                            unauthorized modifications.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <span class="feature-number">02</span>
+                        <div class="feature-icon orange">👤</div>
+                        <h3>Secure Accounts</h3>
+                        <p>
+                            User registration, session-based login and
+                            password hashing.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <span class="feature-number">03</span>
+                        <div class="feature-icon">▤</div>
+                        <h3>Encrypted Storage</h3>
+                        <p>
+                            Encrypted message content is stored in SQL Server
+                            before it is decrypted for the recipient.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <div class="feature-card">
+                        <span class="feature-number">04</span>
+                        <div class="feature-icon orange">⌘</div>
+                        <h3>TCP Networking</h3>
+                        <p>
+                            A separate Python socket client and server
+                            demonstrate encrypted data transmission.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="cta-card">
+                <div>
+                    <h2>
+                        {% if session.get('user_id') %}
+                        Welcome back, <span class="gradient-text">{{ session.get('username') }}.</span>
+                        {% else %}
+                        Ready to explore CryptoNet?
+                        {% endif %}
+                    </h2>
+
+                    <p>
+                        {% if session.get('user_id') %}
+                        Continue to your dashboard or compose a secure message.
+                        {% else %}
+                        Create your account and explore the secure messaging demo.
+                        {% endif %}
+                    </p>
+                </div>
+
+                {% if session.get('user_id') %}
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+                    Go to Dashboard →
+                </a>
+                {% else %}
+                <a href="{{ url_for('register') }}" class="btn btn-primary">
+                    Create Account →
+                </a>
+                {% endif %}
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

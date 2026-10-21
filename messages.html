@@ -1,0 +1,430 @@
+{% extends "base.html" %}
+
+{% block title %}Compose Message | CryptoNet{% endblock %}
+
+{% block content %}
+<style>
+    .messages-page {
+        position: relative;
+        min-height: 70vh;
+        overflow: hidden;
+    }
+
+    .messages-page::before {
+        content: "";
+        position: absolute;
+        top: -100px;
+        right: -100px;
+        width: 400px;
+        height: 400px;
+        border-radius: 50%;
+        background: rgba(124, 58, 237, .12);
+        filter: blur(100px);
+        pointer-events: none;
+    }
+
+    .messages-layout {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: .75fr 1.25fr;
+        gap: 24px;
+        max-width: 1050px;
+        margin: 0 auto;
+        padding: 42px 22px 55px;
+    }
+
+    .compose-intro {
+        padding: 12px 4px;
+    }
+
+    .compose-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 20px;
+        padding: 8px 11px;
+        border: 1px solid rgba(167, 139, 250, .27);
+        border-radius: 30px;
+        background: rgba(124, 58, 237, .09);
+        color: #c4b5fd;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 1px;
+    }
+
+    .compose-eyebrow span {
+        color: #fb923c;
+    }
+
+    .compose-intro h1 {
+        margin-bottom: 17px;
+        font-size: clamp(33px, 4vw, 46px);
+        font-weight: 800;
+        letter-spacing: -1.8px;
+        line-height: 1.15;
+    }
+
+    .compose-intro>p {
+        color: #a3a8c2;
+        font-size: 13px;
+        line-height: 1.9;
+    }
+
+    .compose-info {
+        display: flex;
+        gap: 13px;
+        margin-top: 26px;
+        padding: 16px;
+        border: 1px solid #282d49;
+        border-radius: 13px;
+        background: rgba(17, 21, 43, .58);
+    }
+
+    .compose-info-icon {
+        display: grid;
+        place-items: center;
+        flex: 0 0 38px;
+        height: 38px;
+        border: 1px solid rgba(167, 139, 250, .2);
+        border-radius: 11px;
+        background: rgba(124, 58, 237, .13);
+        font-size: 17px;
+    }
+
+    .compose-info strong {
+        display: block;
+        margin: 2px 0 5px;
+        font-size: 12px;
+    }
+
+    .compose-info small {
+        display: block;
+        color: #9298b4;
+        font-size: 11px;
+        line-height: 1.8;
+    }
+
+    .compose-card {
+        padding: 29px;
+        border: 1px solid rgba(139, 92, 246, .3);
+        border-radius: 19px;
+        background: linear-gradient(145deg, rgba(21, 24, 48, .96), rgba(11, 13, 29, .98));
+        box-shadow: 0 24px 65px rgba(0, 0, 0, .24);
+    }
+
+    .compose-card-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding-bottom: 21px;
+        margin-bottom: 23px;
+        border-bottom: 1px solid #292d49;
+    }
+
+    .compose-card-icon {
+        display: grid;
+        place-items: center;
+        flex: 0 0 48px;
+        height: 48px;
+        border: 1px solid rgba(167, 139, 250, .25);
+        border-radius: 14px;
+        background: linear-gradient(145deg, rgba(139, 92, 246, .23), rgba(76, 29, 149, .15));
+        font-size: 22px;
+    }
+
+    .compose-card-header h2 {
+        margin: 0 0 6px;
+        font-size: 19px;
+        font-weight: 800;
+        letter-spacing: -.5px;
+    }
+
+    .compose-card-header p {
+        margin: 0;
+        color: #9298b4;
+        font-size: 11px;
+        line-height: 1.6;
+    }
+
+    .compose-field {
+        margin-bottom: 21px;
+    }
+
+    .compose-field label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 9px;
+        color: #e5e3f7;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .field-hint {
+        color: #858ba8;
+        font-size: 10px;
+        font-weight: 500;
+    }
+
+    .compose-field .form-control,
+    .compose-field .form-select {
+        width: 100%;
+        min-height: 48px;
+    }
+
+    .compose-field textarea.form-control {
+        min-height: 175px;
+        resize: vertical;
+        line-height: 1.8;
+    }
+
+    .compose-field textarea.form-control::placeholder {
+        color: #777e9c;
+    }
+
+    .message-meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 8px;
+        color: #858ba8;
+        font-size: 10px;
+    }
+
+    .message-counter {
+        color: #b9a6fa;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .compose-submit {
+        width: 100%;
+        min-height: 49px;
+        margin-top: 2px;
+    }
+
+    .compose-submit:disabled {
+        opacity: .55;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .compose-footer {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 21px;
+        padding-top: 18px;
+        border-top: 1px solid #292d49;
+    }
+
+    .compose-footer a {
+        color: #b9a6fa;
+        font-size: 11px;
+        font-weight: 650;
+    }
+
+    .compose-footer a:hover {
+        color: #fb923c;
+    }
+
+    .compose-security-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        margin-top: 18px;
+        color: #858ba8;
+        font-size: 10px;
+        line-height: 1.8;
+    }
+
+    .compose-security-note span {
+        color: #86efac;
+    }
+
+    @media (max-width: 767px) {
+        .messages-layout {
+            grid-template-columns: 1fr;
+            gap: 19px;
+            padding: 28px 15px 40px;
+        }
+
+        .compose-intro {
+            padding: 4px;
+        }
+
+        .compose-intro h1 {
+            font-size: 36px;
+            letter-spacing: -1.2px;
+        }
+
+        .compose-info {
+            margin-top: 18px;
+        }
+
+        .compose-card {
+            padding: 23px 19px;
+        }
+    }
+
+    @media (max-width: 380px) {
+        .compose-card {
+            padding: 20px 15px;
+        }
+
+        .compose-card-header h2 {
+            font-size: 17px;
+        }
+
+        .compose-field label {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 5px;
+        }
+    }
+</style>
+
+<div class="messages-page">
+    <div class="messages-layout">
+
+        <section class="compose-intro">
+            <div class="compose-eyebrow">
+                <span>✦</span> SECURE MESSAGING
+            </div>
+
+            <h1>
+                Send a message.<br>
+                <span class="gradient-text">Keep it private.</span>
+            </h1>
+
+            <p>
+                Compose a message for another registered CryptoNet user.
+                Your message is encrypted with AES-GCM before it is stored
+                in the database.
+            </p>
+
+            <div class="compose-info">
+                <div class="compose-info-icon">🔐</div>
+                <div>
+                    <strong>AES-GCM encryption</strong>
+                    <small>
+                        Authenticated encryption helps detect changes to
+                        encrypted message data.
+                    </small>
+                </div>
+            </div>
+
+            <div class="compose-info">
+                <div class="compose-info-icon">▤</div>
+                <div>
+                    <strong>Encrypted message storage</strong>
+                    <small>
+                        The message text is encrypted before being saved
+                        in SQL Server.
+                    </small>
+                </div>
+            </div>
+
+            <div class="compose-info">
+                <div class="compose-info-icon">⌘</div>
+                <div>
+                    <strong>Built for learning</strong>
+                    <small>
+                        Explore cryptography and networking through a
+                        practical messaging application.
+                    </small>
+                </div>
+            </div>
+        </section>
+
+        <section class="compose-card">
+            <div class="compose-card-header">
+                <div class="compose-card-icon">✉</div>
+                <div>
+                    <h2>Compose message</h2>
+                    <p>Choose a recipient and write your message.</p>
+                </div>
+            </div>
+
+            <form method="POST" action="{{ url_for('send_message') }}" id="composeForm">
+
+                <div class="compose-field">
+                    <label for="receiver">
+                        Recipient
+                        <span class="field-hint">Required</span>
+                    </label>
+
+                    <select id="receiver" name="receiver" class="form-select" required>
+                        <option value="">Choose a CryptoNet user</option>
+
+                        {% for user in users %}
+                        <option value="{{ user[0] }}">{{ user[1] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="compose-field">
+                    <label for="message">
+                        Your message
+                        <span class="field-hint">Maximum 5,000 characters</span>
+                    </label>
+
+                    <textarea id="message" name="message" class="form-control" placeholder="Write your message here..."
+                        maxlength="5000" required></textarea>
+
+                    <div class="message-meta">
+                        <span>Keep your message clear and concise.</span>
+                        <span class="message-counter" id="messageCounter">0 / 5000</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary compose-submit" id="sendButton">
+                    <span>🔒</span> Encrypt &amp; Send Message <span>→</span>
+                </button>
+
+                <div class="compose-security-note">
+                    <span>●</span>
+                    <span>
+                        Your message is encrypted by the application before
+                        storage. This local demo does not provide true
+                        end-to-end encryption.
+                    </span>
+                </div>
+            </form>
+
+            <div class="compose-footer">
+                <a href="{{ url_for('dashboard') }}">← Back to Dashboard</a>
+                <a href="{{ url_for('inbox') }}">Open Inbox →</a>
+            </div>
+        </section>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const messageInput = document.getElementById("message");
+    const messageCounter = document.getElementById("messageCounter");
+    const composeForm = document.getElementById("composeForm");
+    const sendButton = document.getElementById("sendButton");
+
+    function updateMessageCounter() {
+        messageCounter.textContent = messageInput.value.length + " / 5000";
+    }
+
+    messageInput.addEventListener("input", updateMessageCounter);
+    updateMessageCounter();
+
+    composeForm.addEventListener("submit", function () {
+        if (!composeForm.checkValidity()) {
+            return;
+        }
+
+        sendButton.disabled = true;
+        sendButton.innerHTML = "Sending encrypted message...";
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,461 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | CryptoNet{% endblock %}
+
+{% block content %}
+<style>
+    .dashboard-page {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .dashboard-page::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: -100px;
+        width: 360px;
+        height: 360px;
+        border-radius: 50%;
+        background: rgba(124, 58, 237, .12);
+        filter: blur(100px);
+        pointer-events: none;
+    }
+
+    .dashboard-content {
+        position: relative;
+        z-index: 1;
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 42px 22px 55px;
+    }
+
+    .dashboard-welcome {
+        position: relative;
+        overflow: hidden;
+        padding: 34px;
+        border: 1px solid rgba(139, 92, 246, .32);
+        border-radius: 20px;
+        background:
+            radial-gradient(ellipse at 100% 0%, rgba(124, 58, 237, .22), transparent 48%),
+            linear-gradient(125deg, #17162f, #0e1022 75%);
+        box-shadow: 0 20px 55px rgba(0, 0, 0, .2);
+    }
+
+    .dashboard-welcome::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        width: 190px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #8b5cf6, #fb923c);
+    }
+
+    .welcome-layout {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 25px;
+    }
+
+    .dashboard-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 17px;
+        padding: 7px 11px;
+        border: 1px solid rgba(167, 139, 250, .25);
+        border-radius: 30px;
+        background: rgba(124, 58, 237, .1);
+        color: #c4b5fd;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 1px;
+    }
+
+    .dashboard-eyebrow span {
+        color: #fb923c;
+    }
+
+    .welcome-title {
+        margin: 0 0 13px;
+        font-size: clamp(30px, 4vw, 43px);
+        font-weight: 800;
+        letter-spacing: -1.5px;
+        line-height: 1.15;
+        overflow-wrap: anywhere;
+    }
+
+    .welcome-description {
+        max-width: 610px;
+        margin: 0;
+        color: #a3a8c2;
+        font-size: 13px;
+        line-height: 1.9;
+    }
+
+    .welcome-symbol {
+        display: grid;
+        place-items: center;
+        flex: 0 0 100px;
+        width: 100px;
+        height: 100px;
+        border: 1px solid rgba(196, 181, 253, .3);
+        border-radius: 27px;
+        background: linear-gradient(145deg, rgba(139, 92, 246, .25), rgba(76, 29, 149, .15));
+        box-shadow: 0 0 50px rgba(124, 58, 237, .13);
+        color: #d6c7ff;
+        font-size: 46px;
+    }
+
+    .section-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 15px;
+        margin: 36px 0 19px;
+    }
+
+    .section-heading h2 {
+        margin: 0 0 7px;
+        font-size: 21px;
+        font-weight: 800;
+        letter-spacing: -.5px;
+    }
+
+    .section-heading p {
+        margin: 0;
+        color: #9298b4;
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    .action-card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-height: 225px;
+        padding: 24px;
+        border: 1px solid #252b49;
+        border-radius: 16px;
+        background: linear-gradient(145deg, rgba(19, 22, 44, .96), rgba(11, 13, 28, .98));
+        transition: transform .22s, border-color .22s, box-shadow .22s;
+    }
+
+    .action-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(167, 139, 250, .55);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, .2);
+    }
+
+    .action-icon {
+        display: grid;
+        place-items: center;
+        width: 48px;
+        height: 48px;
+        margin-bottom: 21px;
+        border: 1px solid rgba(167, 139, 250, .2);
+        border-radius: 13px;
+        background: rgba(124, 58, 237, .13);
+        font-size: 22px;
+    }
+
+    .action-icon.orange {
+        border-color: rgba(251, 146, 60, .22);
+        background: rgba(251, 146, 60, .09);
+    }
+
+    .action-card h3 {
+        margin-bottom: 10px;
+        font-size: 16px;
+        font-weight: 750;
+    }
+
+    .action-card p {
+        flex: 1;
+        margin-bottom: 22px;
+        color: #9da3bd;
+        font-size: 12px;
+        line-height: 1.8;
+    }
+
+    .action-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        color: #c4b5fd;
+        font-size: 12px;
+        font-weight: 750;
+    }
+
+    .action-link:hover {
+        color: #fb923c;
+    }
+
+    .security-panel {
+        margin-top: 27px;
+        padding: 24px;
+        border: 1px solid #252b49;
+        border-radius: 16px;
+        background: rgba(16, 19, 39, .8);
+    }
+
+    .security-panel h3 {
+        margin-bottom: 7px;
+        font-size: 16px;
+        font-weight: 750;
+    }
+
+    .security-panel>p {
+        margin-bottom: 21px;
+        color: #9298b4;
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    .security-list {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+
+    .security-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 11px;
+        padding: 15px;
+        border: 1px solid #282d49;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, .015);
+    }
+
+    .security-check {
+        display: grid;
+        place-items: center;
+        flex: 0 0 25px;
+        width: 25px;
+        height: 25px;
+        border-radius: 8px;
+        background: rgba(74, 222, 128, .1);
+        color: #86efac;
+        font-size: 12px;
+    }
+
+    .security-item strong {
+        display: block;
+        margin: 2px 0 5px;
+        color: #e9e7fb;
+        font-size: 11px;
+    }
+
+    .security-item small {
+        display: block;
+        color: #9298b4;
+        font-size: 10px;
+        line-height: 1.7;
+    }
+
+    .dashboard-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-top: 25px;
+        padding-top: 21px;
+        border-top: 1px solid #252943;
+        color: #858ba8;
+        font-size: 11px;
+    }
+
+    .dashboard-bottom a {
+        color: #c4b5fd;
+        font-weight: 650;
+    }
+
+    .dashboard-bottom a:hover {
+        color: #fb923c;
+    }
+
+    @media (max-width: 767px) {
+        .dashboard-content {
+            padding: 27px 15px 40px;
+        }
+
+        .dashboard-welcome {
+            padding: 25px 20px;
+        }
+
+        .welcome-symbol {
+            flex-basis: 65px;
+            width: 65px;
+            height: 65px;
+            border-radius: 19px;
+            font-size: 30px;
+        }
+
+        .welcome-title {
+            font-size: 31px;
+            letter-spacing: -1px;
+        }
+
+        .security-list {
+            grid-template-columns: 1fr;
+        }
+
+        .security-panel {
+            padding: 19px;
+        }
+    }
+
+    @media (max-width: 440px) {
+        .welcome-layout {
+            align-items: flex-start;
+            flex-direction: column-reverse;
+            gap: 20px;
+        }
+
+        .welcome-symbol {
+            flex-basis: 58px;
+            width: 58px;
+            height: 58px;
+            font-size: 26px;
+        }
+
+        .welcome-title {
+            font-size: 29px;
+        }
+
+        .section-heading {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="dashboard-page">
+    <div class="dashboard-content">
+
+        <section class="dashboard-welcome">
+            <div class="welcome-layout">
+                <div>
+                    <div class="dashboard-eyebrow">
+                        <span>✦</span> YOUR SECURE WORKSPACE
+                    </div>
+
+                    <h1 class="welcome-title">
+                        Welcome back,<br>
+                        <span class="gradient-text">{{ username }}.</span>
+                    </h1>
+
+                    <p class="welcome-description">
+                        Your CryptoNet workspace is ready. Compose encrypted
+                        messages, view received messages and explore the
+                        secure data transmission demonstration.
+                    </p>
+                </div>
+
+                <div class="welcome-symbol" aria-hidden="true">⬡</div>
+            </div>
+        </section>
+
+        <section>
+            <div class="section-heading">
+                <div>
+                    <h2>Quick actions</h2>
+                    <p>Everything you need, right at your fingertips.</p>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6 col-lg-4">
+                    <a href="{{ url_for('messages') }}" class="action-card text-decoration-none">
+                        <div class="action-icon">✉</div>
+                        <h3>Compose a message</h3>
+                        <p>
+                            Select another registered user and send a message
+                            encrypted with AES-GCM.
+                        </p>
+                        <span class="action-link">
+                            Open message composer <span>→</span>
+                        </span>
+                    </a>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <a href="{{ url_for('inbox') }}" class="action-card text-decoration-none">
+                        <div class="action-icon orange">▤</div>
+                        <h3>Your inbox</h3>
+                        <p>
+                            View received messages and their verification
+                            status after decryption.
+                        </p>
+                        <span class="action-link">
+                            View received messages <span>→</span>
+                        </span>
+                    </a>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <a href="{{ url_for('home') }}" class="action-card text-decoration-none">
+                        <div class="action-icon">⌘</div>
+                        <h3>Explore CryptoNet</h3>
+                        <p>
+                            Learn about the encryption, account security
+                            and TCP networking demonstrated by this project.
+                        </p>
+                        <span class="action-link">
+                            Explore the platform <span>→</span>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="security-panel">
+            <h3>Security overview</h3>
+            <p>
+                Technologies used in the CryptoNet educational demonstration.
+            </p>
+
+            <div class="security-list">
+                <div class="security-item">
+                    <span class="security-check">✓</span>
+                    <div>
+                        <strong>AES-GCM encryption</strong>
+                        <small>Authenticated encryption for message content.</small>
+                    </div>
+                </div>
+
+                <div class="security-item">
+                    <span class="security-check">✓</span>
+                    <div>
+                        <strong>Password hashing</strong>
+                        <small>Passwords are stored as hashes in the database.</small>
+                    </div>
+                </div>
+
+                <div class="security-item">
+                    <span class="security-check">✓</span>
+                    <div>
+                        <strong>SQL Server storage</strong>
+                        <small>Encrypted message content and message metadata.</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-bottom">
+                <span>Logged in as <span class="accent">{{ username }}</span></span>
+                <span>
+                    Need to leave?
+                    <a href="{{ url_for('logout') }}">Logout →</a>
+                </span>
+            </div>
+        </section>
+
+    </div>
+</div>
+{% endblock %}

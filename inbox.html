@@ -1,0 +1,467 @@
+{% extends "base.html" %}
+
+{% block title %}Inbox | CryptoNet{% endblock %}
+
+{% block content %}
+<style>
+    .inbox-page {
+        position: relative;
+        min-height: 70vh;
+        overflow: hidden;
+    }
+
+    .inbox-page::before {
+        content: "";
+        position: absolute;
+        top: -100px;
+        right: -100px;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        background: rgba(124, 58, 237, .12);
+        filter: blur(100px);
+        pointer-events: none;
+    }
+
+    .inbox-content {
+        position: relative;
+        z-index: 1;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 38px 22px 55px;
+    }
+
+    .inbox-hero {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 30px;
+        border: 1px solid rgba(139, 92, 246, .32);
+        border-radius: 19px;
+        background:
+            radial-gradient(ellipse at 100% 0%, rgba(124, 58, 237, .2), transparent 50%),
+            linear-gradient(130deg, #17162f, #0e1022 75%);
+        box-shadow: 0 18px 45px rgba(0, 0, 0, .18);
+    }
+
+    .inbox-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 15px;
+        color: #c4b5fd;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 1.2px;
+    }
+
+    .inbox-eyebrow span {
+        color: #fb923c;
+    }
+
+    .inbox-hero h1 {
+        margin: 0 0 11px;
+        font-size: clamp(30px, 4vw, 40px);
+        font-weight: 800;
+        letter-spacing: -1.4px;
+    }
+
+    .inbox-hero p {
+        max-width: 580px;
+        margin: 0;
+        color: #a3a8c2;
+        font-size: 12px;
+        line-height: 1.9;
+    }
+
+    .inbox-hero-icon {
+        display: grid;
+        place-items: center;
+        flex: 0 0 75px;
+        width: 75px;
+        height: 75px;
+        border: 1px solid rgba(196, 181, 253, .28);
+        border-radius: 22px;
+        background: rgba(124, 58, 237, .14);
+        color: #d6c7ff;
+        font-size: 33px;
+    }
+
+    .inbox-section-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin: 32px 0 18px;
+    }
+
+    .inbox-section-heading h2 {
+        margin: 0 0 6px;
+        font-size: 19px;
+        font-weight: 800;
+    }
+
+    .inbox-section-heading p {
+        margin: 0;
+        color: #9298b4;
+        font-size: 11px;
+    }
+
+    .inbox-count {
+        padding: 7px 11px;
+        border: 1px solid rgba(167, 139, 250, .25);
+        border-radius: 20px;
+        background: rgba(124, 58, 237, .1);
+        color: #c4b5fd;
+        font-size: 10px;
+        font-weight: 750;
+        white-space: nowrap;
+    }
+
+    .inbox-message {
+        margin-bottom: 16px;
+        padding: 23px;
+        border: 1px solid #292d49;
+        border-radius: 16px;
+        background: linear-gradient(145deg, rgba(20, 23, 46, .95), rgba(12, 14, 29, .98));
+        transition: border-color .2s, transform .2s;
+    }
+
+    .inbox-message:hover {
+        border-color: rgba(139, 92, 246, .5);
+        transform: translateY(-2px);
+    }
+
+    .inbox-message-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 15px;
+        padding-bottom: 17px;
+        border-bottom: 1px solid #292d49;
+    }
+
+    .sender-info {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        min-width: 0;
+    }
+
+    .sender-avatar {
+        display: grid;
+        place-items: center;
+        flex: 0 0 44px;
+        width: 44px;
+        height: 44px;
+        border: 1px solid rgba(167, 139, 250, .27);
+        border-radius: 14px;
+        background: linear-gradient(145deg, rgba(139, 92, 246, .25), rgba(76, 29, 149, .18));
+        color: #d6c7ff;
+        font-size: 18px;
+        font-weight: 800;
+    }
+
+    .sender-info h3 {
+        margin: 0 0 5px;
+        color: #f1efff;
+        font-size: 14px;
+        font-weight: 750;
+        overflow-wrap: anywhere;
+    }
+
+    .sender-info small {
+        color: #9298b4;
+        font-size: 10px;
+    }
+
+    .verification-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 9px;
+        border: 1px solid rgba(74, 222, 128, .2);
+        border-radius: 20px;
+        background: rgba(74, 222, 128, .07);
+        color: #86efac;
+        font-size: 10px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .verification-badge.failed {
+        border-color: rgba(248, 113, 113, .25);
+        background: rgba(248, 113, 113, .07);
+        color: #fca5a5;
+    }
+
+    .message-body {
+        padding: 19px 0 5px;
+    }
+
+    .message-body-label {
+        margin-bottom: 10px;
+        color: #9298b4;
+        font-size: 10px;
+        font-weight: 750;
+        letter-spacing: .8px;
+        text-transform: uppercase;
+    }
+
+    .message-text {
+        margin: 0;
+        color: #e5e3f7;
+        font-size: 13px;
+        line-height: 1.95;
+        overflow-wrap: anywhere;
+        white-space: pre-wrap;
+    }
+
+    .message-error {
+        margin: 0;
+        padding: 13px;
+        border: 1px solid rgba(248, 113, 113, .2);
+        border-radius: 10px;
+        background: rgba(248, 113, 113, .06);
+        color: #fca5a5;
+        font-size: 12px;
+        line-height: 1.8;
+        overflow-wrap: anywhere;
+    }
+
+    .message-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 18px;
+        padding-top: 15px;
+        border-top: 1px solid #292d49;
+        color: #858ba8;
+        font-size: 10px;
+    }
+
+    .message-card-footer .message-id {
+        color: #b9a6fa;
+    }
+
+    .inbox-empty {
+        padding: 48px 22px;
+        border: 1px dashed #353052;
+        border-radius: 17px;
+        background: rgba(17, 20, 41, .6);
+        text-align: center;
+    }
+
+    .empty-icon {
+        display: grid;
+        place-items: center;
+        width: 70px;
+        height: 70px;
+        margin: 0 auto 20px;
+        border: 1px solid rgba(167, 139, 250, .24);
+        border-radius: 22px;
+        background: rgba(124, 58, 237, .12);
+        font-size: 29px;
+    }
+
+    .inbox-empty h3 {
+        margin-bottom: 9px;
+        font-size: 18px;
+        font-weight: 800;
+    }
+
+    .inbox-empty p {
+        max-width: 370px;
+        margin: 0 auto 22px;
+        color: #9298b4;
+        font-size: 12px;
+        line-height: 1.8;
+    }
+
+    .inbox-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 28px;
+        padding-top: 20px;
+        border-top: 1px solid #252943;
+    }
+
+    .inbox-bottom a:not(.btn) {
+        color: #b9a6fa;
+        font-size: 11px;
+        font-weight: 650;
+    }
+
+    .inbox-bottom a:not(.btn):hover {
+        color: #fb923c;
+    }
+
+    @media (max-width: 600px) {
+        .inbox-content {
+            padding: 25px 15px 40px;
+        }
+
+        .inbox-hero {
+            align-items: flex-start;
+            padding: 23px 19px;
+        }
+
+        .inbox-hero-icon {
+            flex-basis: 54px;
+            width: 54px;
+            height: 54px;
+            border-radius: 16px;
+            font-size: 24px;
+        }
+
+        .inbox-hero h1 {
+            font-size: 30px;
+            letter-spacing: -1px;
+        }
+
+        .inbox-message {
+            padding: 18px 15px;
+        }
+
+        .inbox-message-top {
+            flex-direction: column;
+        }
+
+        .verification-badge {
+            white-space: normal;
+        }
+
+        .inbox-section-heading {
+            align-items: flex-start;
+        }
+    }
+
+    @media (max-width: 360px) {
+        .inbox-hero-icon {
+            display: none;
+        }
+    }
+</style>
+
+<div class="inbox-page">
+    <div class="inbox-content">
+
+        <section class="inbox-hero">
+            <div>
+                <div class="inbox-eyebrow">
+                    <span>✦</span> YOUR PRIVATE SPACE
+                </div>
+
+                <h1>
+                    Your <span class="gradient-text">Inbox.</span>
+                </h1>
+
+                <p>
+                    All messages received by your CryptoNet account in one place.
+                    Successfully verified messages are decrypted for display.
+                </p>
+            </div>
+
+            <div class="inbox-hero-icon" aria-hidden="true">▤</div>
+        </section>
+
+        <section>
+            <div class="inbox-section-heading">
+                <div>
+                    <h2>Received messages</h2>
+                    <p>Your incoming messages and their verification results.</p>
+                </div>
+
+                <span class="inbox-count">
+                    {{ messages|length }} message{% if messages|length != 1 %}s{% endif %}
+                </span>
+            </div>
+
+            {% if messages %}
+            {% for item in messages %}
+            <article class="inbox-message">
+                <div class="inbox-message-top">
+                    <div class="sender-info">
+                        <div class="sender-avatar" aria-hidden="true">✉</div>
+
+                        <div>
+                            <h3>{{ item.sender }}</h3>
+                            <small>
+                                Message #{{ item.message_id }}
+                            </small>
+                        </div>
+                    </div>
+
+                    {% if item.message is not none %}
+                    <span class="verification-badge">
+                        <span>✓</span> {{ item.status }}
+                    </span>
+                    {% else %}
+                    <span class="verification-badge failed">
+                        <span>!</span> Verification failed
+                    </span>
+                    {% endif %}
+                </div>
+
+                <div class="message-body">
+                    <div class="message-body-label">Message content</div>
+
+                    {% if item.message is not none %}
+                    <p class="message-text">{{ item.message }}</p>
+                    {% else %}
+                    <p class="message-error">
+                        {{ item.status }}. The message could not
+                        be verified and decrypted, so its contents
+                        are not displayed.
+                    </p>
+                    {% endif %}
+                </div>
+
+                <div class="message-card-footer">
+                    <span>
+                        <span class="message-id">●</span>
+                        Received message
+                    </span>
+
+                    <span>
+                        {% if item.sent_at %}
+                        {{ item.sent_at }}
+                        {% else %}
+                        Date unavailable
+                        {% endif %}
+                    </span>
+                </div>
+            </article>
+            {% endfor %}
+            {% else %}
+            <div class="inbox-empty">
+                <div class="empty-icon" aria-hidden="true">✉</div>
+
+                <h3>Your inbox is quiet</h3>
+
+                <p>
+                    No messages have arrived yet. When another CryptoNet
+                    user sends you a message, it will appear here.
+                </p>
+
+                <a href="{{ url_for('messages') }}" class="btn btn-primary">
+                    Compose a message <span>→</span>
+                </a>
+            </div>
+            {% endif %}
+        </section>
+
+        <div class="inbox-bottom">
+            <a href="{{ url_for('dashboard') }}">← Back to Dashboard</a>
+            <a href="{{ url_for('messages') }}">✉ Compose a message →</a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
