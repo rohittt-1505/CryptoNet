@@ -172,6 +172,7 @@ def logout():
     return redirect(url_for("home"))
 
 
+
 @app.route("/messages/send", methods=["POST"])
 def send_message():
     if "user_id" not in session:
@@ -191,10 +192,11 @@ def send_message():
     connection = None
 
     try:
+        import hashlib
+
         connection = get_connection()
         cursor = connection.cursor()
 
-        # Verify receiver exists.
         cursor.execute(
             "SELECT UserId FROM dbo.Users WHERE UserId = ?",
             (receiver_id,)
@@ -207,17 +209,24 @@ def send_message():
         key = load_or_create_key()
         encrypted = encrypt_message(message, key)
 
+        # Store a SHA-256 hash of the encrypted ciphertext.
+        ciphertext = encrypted["ciphertext"]
+        message_hash = hashlib.sha256(
+            ciphertext.encode("utf-8")
+        ).hexdigest()
+
         cursor.execute(
             """
             INSERT INTO dbo.MessageLogs
                 (SenderId, ReceiverId, MessageHash, Nonce, CipherText, Status)
-            VALUES (?, ?, NULL, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?)
             """,
             (
                 session["user_id"],
                 receiver_id,
+                message_hash,
                 encrypted["nonce"],
-                encrypted["ciphertext"],
+                ciphertext,
                 "Sent"
             )
         )
@@ -226,6 +235,9 @@ def send_message():
         flash("Encrypted message saved successfully!", "success")
 
     except Exception:
+        if connection is not None:
+            connection.rollback()
+
         app.logger.exception("Message sending failed")
         flash("Message could not be sent. Check the server log.", "error")
 
